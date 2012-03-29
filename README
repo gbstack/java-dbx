@@ -45,8 +45,8 @@ on the classpath!
 
 
 ===== Usage =====
-Download and open the javadoc folder in the master branch, or if the javadoc
-finds itself online refer to that, for any usage information.
+Download and open the javadoc folder in the master branch, or read the javadoc
+online at http://java-oe-reader.sourceforge.net
 
 Generally, you want to create an OEReader object, load a file with the open(...)
 method, and then call getMessages() to retrieve an array of OEMessageInfo objects,
