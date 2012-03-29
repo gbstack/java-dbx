@@ -3,8 +3,23 @@ package net.sf.oereader;
 import java.io.*;
 import java.util.Arrays;
 
+/**
+ * Main class used to read data from a .dbx Outlook Express file.
+ *
+ * This class takes care of loading the data from the .dbx file, parsing the {@link net.sf.oereader.OEFileHeader header},
+ * and loading an array of {@link net.sf.oereader.OEMessage messages} to be used by the application.
+ *
+ * @author Alex Franchuk
+ * @version 1.0
+ */
 public class OEReader {
+	/**
+	 * {@link net.sf.oereader.OEFileHeader FileHeader} of the file
+	 */
 	public OEFileHeader header;
+	/**
+	 * {@link net.sf.oereader.OEFileInfo FileInfo} of the file
+	 */
 	public OEFileInfo info;
 	
 	private byte data[];
@@ -12,22 +27,39 @@ public class OEReader {
 	
 	public OEReader() {}
 	
+	/**
+	 * Opens a file, given the name, and reads the header information.
+	 *
+	 * @param file name of the .dbx file
+	 * @return whether the file was read successfully
+	 */
 	public boolean open(String file) {
 		if (file != null) {
 			File f = new File(file);
-			if (f != null) {
-				try {
-					FileInputStream fin = new FileInputStream(f);
-					data = new byte[(int)f.length()];
-					fin.read(data);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			else return false;
+			return open(f);
 		}
 		else return false;
 		
+	}
+
+	/**
+	 * Opens a file, given the {@link java.io.File File}, and reads the header information.
+	 *
+	 * @param file {@link java.io.File File} of the .dbx file
+	 * @return whether the file was read successfully
+	 */
+	public boolean open(File file) {
+		if (file != null) {
+			try {
+				FileInputStream fin = new FileInputStream(file);
+				data = new byte[(int)file.length()];
+				fin.read(data);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else return false;
+
 		if (data == null) return false;
 		
 		header = new OEFileHeader(data);
@@ -37,6 +69,9 @@ public class OEReader {
 		return true;
 	}
 	
+	/**
+	 * Closes a previously opened file.
+	 */
 	public void close() {
 		header = null;
 		info = null;
@@ -52,7 +87,7 @@ public class OEReader {
 	}
 
 	
-	private OEMessageInfo[] tree_Messages(byte[] data,OTree t) {
+	private OEMessageInfo[] tree_Messages(byte[] data,OETree t) {
 		if (t == null) return new OEMessageInfo[0];
 		OEMessageInfo[] ret = new OEMessageInfo[t.bodyentries];
 		for (int i = 0; i < t.bodyentries; i++) {
@@ -65,6 +100,11 @@ public class OEReader {
 		return ret;
 	}	
 	
+	/**
+	 * Gets an array of all {@link net.sf.oereader.OEMessageInfo OEMessageInfo} objects from the opened file.
+	 *
+	 *@return an array of {@link net.sf.oereader.OEMessageInfo OEMessageInfo} objects
+	 */
 	public OEMessageInfo[] getMessages() {
 		if (open == false) return null;
 		

@@ -1,9 +1,34 @@
 package net.sf.oereader;
 
+/**
+ * Provides information about the current file.
+ * @author Alex Franchuk
+ * @version 1.0
+ */
 public class OEFileInfo extends OEBase {
-	public String regKey,folderName;
+	/**
+	 * Registry key of the account
+	 */
+	public String regKey;
+	/**
+	 * Folder name used in Outlook Express
+	 */
+	public String folderName;
+	/**
+	 * Source Type (3 = LocalStore, 0 = News)
+	 */
 	public int sourceType;
+	/**
+	 * Creation time of this file (FolderDB)
+	 */
 	public int[] filetime;
+	/**
+	 * Constructor for an OEFileInfo object.
+	 *
+	 * @param type String denoting the type of the file from the {@link net.sf.oereader.OEFileHeader#type FileHeader}
+	 * @param data data to be read
+	 * @param i index to start from
+	 */
 	public OEFileInfo(String type, byte[] data, int i) {
 		if (type == "MessageDB") {
 			if (toInt4(data,i) != 1) return;

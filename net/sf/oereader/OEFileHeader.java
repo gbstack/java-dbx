@@ -1,12 +1,121 @@
 package net.sf.oereader;
 
+/**
+ * File header at the beginning of a .dbx Outlook Express file.
+ *
+ * @author Alex Franchuk
+ * @version 1.0
+ */
 public class OEFileHeader extends OEBase {
+	/**
+	 * Type of file (MessageDB,FolderDB,OfflineDB)
+	 */
 	public String type = "";
-	public int fileInfoLength,lastvseg,vseglength,lastvsegspace,lasttseg,tseglength,lasttsegspace,
-	  lastmseg,mseglength,lastmsegspace,rootp_deletedm,rootp_deletedt,middle_use_space,
-	  middle_reuse_space,lasttentry,firstflnode,lastflnode,fm_use_space,mconditions,fconditions,
-	  rootnodeEntries,variantEntries,rootnode,rootnodeVariant;
-	
+	/**
+	 * Length of {@link net.sf.oereader.OEFileInfo FileInfo} object
+	 */
+	public int fileInfoLength;
+	/**
+	 * Pointer to the last variable segment
+	 */
+	public int lastvseg;
+	/**
+	 * Length of a variable segment
+	 */
+	public int vseglength;
+	/**
+	 * Used space of the last variable segment
+	 */
+	public int lastvsegspace;
+	/**
+	 * Pointer to the last {@link net.sf.oereader.OETree Tree} segment
+	 */
+	public int lasttseg;
+	/**
+	 * Length of a {@link net.sf.oereader.OETree Tree} segment
+	 */
+	public int tseglength;
+	/**
+	 * Used space of the last {@link net.sf.oereader.OETree Tree} segment
+	 */
+	public int lasttsegspace;
+	/**
+	 * Pointer to the last {@link net.sf.oereader.OEMessage Message} segment
+	 */
+	public int lastmseg;
+	/**
+	 * Length of a {@link net.sf.oereader.OEMessage Message} segment
+	 */
+	public int mseglength;
+	/**
+	 * Used space of the last {@link net.sf.oereader.OEMessage Message} segment
+	 */
+	public int lastmsegspace;
+	/**
+	 * Root pointer to the deleted {@link net.sf.oereader.OEMessage Message} list
+	 */
+	public int rootp_deletedm;
+	/**
+	 * Root pointer to the deleted {@link net.sf.oereader.OETree Tree} list
+	 */
+	public int rootp_deletedt;
+	/**
+	 * Used space in the middle sector of the file
+	 */
+	public int middle_use_space;
+	/**
+	 * Reusable space in the middle sector of the file
+	 */
+	public int middle_reuse_space;
+	/**
+	 * Index of the last entry in the {@link net.sf.oereader.OETree Tree}
+	 */
+	public int lasttentry;
+	/**
+	 * Pointer to the first FolderList node
+	 */
+	public int firstflnode;
+	/**
+	 * Pointer to the last FolderList node
+	 */
+	public int lastflnode;
+	/**
+	 * Used space of the file (length of the first and the middle sector)
+	 */
+	public int fm_use_space;
+	/**
+	 * Pointer to the MessageConditions object
+	 */
+	public int mconditions;
+	/**
+	 * Pointer to the FolderConditions object
+	 */
+	public int fconditions;
+	/**
+	 * Entries in the rootnode of the main {@link net.sf.oereader.OETree Tree}
+	 */
+	public int rootnodeEntries;
+	/**
+	 * Entries in the rootnode of the variant {@link net.sf.oereader.OETree Tree} (Watched or ignored {@link net.sf.oereader.OEMessageInfo MessageInfo} objects)
+	 */
+	public int variantEntries;
+	/**
+	 * Pointer to the rootnode of the main {@link net.sf.oereader.OETree Tree}
+	 */
+	public int rootnode;
+	/**
+	 * Pointer to the rootnode of the variant {@link net.sf.oereader.OETree Tree}
+	 */
+	public int rootnodeVariant;
+
+	/**
+	 * Constructor for an OEFileHeader.
+	 *
+	 * The file header is the first data that will be read from a given .dbx file. It contains all information
+	 * necessary to parse the rest of the file.
+	 *
+	 * @param data data to be read
+	 */
 	public OEFileHeader(byte[] data) {
 		if (toInt(data,0) != 0xcfad12fe) {
 			return;
@@ -57,6 +166,12 @@ public class OEFileHeader extends OEBase {
 		//Ends at 0x24bc
 	}
 	
+	/**
+	 * Check the magic number sequences in the beginning of the file.
+	 *
+	 * @param data data to be read
+	 * @return whether the magic numbers were valid or not
+	 */
 	public boolean checkMagic(byte[] data) {
 		if (toInt(data,0) != 0xcfad12fe) {
 			return false;

@@ -1,12 +1,112 @@
 package net.sf.oereader;
 
+/**
+ * Contains the information for a Message object.
+ *
+ * This object is only used in the {@link net.sf.oereader.OEFileHeader#type MessageDB} .dbx files.
+ * The pointers to the MessageInfo objects are stored in the {@link net.sf.oereader.OETree Tree}.
+ *
+ * @author Alex Franchuk
+ * @version 1.0
+ */
 public class OEMessageInfo extends OEIndexedInfo {
-	public int index, flags, messageBodyLines,messagep,priority,messageTextLength;
+	/**
+	 * Index
+	 */
+	public int index;
+	/**
+	 * Flags, as described <a href="http://oedbx.aroh.de/doc/OE_Dbx_MessageInfo.html#flags">here</a>
+	 */
+	public int flags;
+	/**
+	 * Number of lines in the {@link net.sf.oereader.OEMessage Message} body
+	 */
+	public int messageBodyLines;
+	/**
+	 * Pointer to the corresponding {@link net.sf.oereader.OEMessage Message}
+	 */
+	public int messagep;
+	/**
+	 * Priority of the email (1 = low, 3 = normal, 5 = high)
+	 */
+	public int priority;
+	/**
+	 * Length of the message header and body (can be incorrect)
+	 */
+	public int messageTextLength;
+	/**
+	 * {@link net.sf.oereader.OEMessage Message} object of this message
+	 */
 	public OEMessage message;
-	public int[] createtime, savetime, receivetime;
-	public String messageId,origSubject,subject,senderan,answeredTo,serverlist,server,sendername,
-		senderaddr,receivername,receiveraddr,accountname;
+	/**
+	 * Time of creation of this message
+	 */
+	public int[] createtime;
+	/**
+	 * Time of saving of this message
+	 */
+	public int[] savetime;
+	/**
+	 * Time of reception of this message
+	 */
+	public int[] receivetime;
+	/**
+	 * Id of this message
+	 */
+	public String messageId;
+	/**
+	 * Original subject of this message (without "re:" etc.)
+	 */
+	public String origSubject;
+	/**
+	 * Subject of this message
+	 */
+	public String subject;
+	/**
+	 * Sender address and name
+	 */
+	public String senderan;
+	/**
+	 * Answered to {@link #messageId messageId}
+	 */
+	public String answeredTo;
+	/**
+	 * Server/Newsgroup/Message number (list)
+	 */
+	public String serverlist;
+	/**
+	 * Server the message was taken from
+	 */
+	public String server;
+	/**
+	 * Name of the sender ("From")
+	 */
+	public String sendername;
+	/**
+	 * Address of the sender ("From")
+	 */
+	public String senderaddr;
+	/**
+	 * Name of the recipient ("To")
+	 */
+	public String receivername;
+	/**
+	 * Address of the recipient ("To")
+	 */
+	public String receiveraddr;
+	/**
+	 * Mail or newsgroup account name
+	 */
+	public String accountname;
 	
+	/**
+	 * Constructor for the MessageInfo object.
+	 *
+	 * Starts by loading the information in the {@link net.sf.oereader.OEIndexedInfo IndexedInfo} parent object.
+	 *
+	 * @param data data to be read
+	 * @param m index to start from
+	 */
 	public OEMessageInfo(byte[] data, int m) {
 		super(data,m);
 		for (int i = 0; i < indices.length; i++) {
