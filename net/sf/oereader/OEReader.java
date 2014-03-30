@@ -1,16 +1,18 @@
 package net.sf.oereader;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main class used to read data from a .dbx Outlook Express file.
  *
  * This class takes care of loading the data from the .dbx file, parsing the {@link net.sf.oereader.OEFileHeader header},
- * and loading an array of {@link net.sf.oereader.OEMessage messages} to be used by the application.
+ * and loading a list of {@link net.sf.oereader.OEMessage messages} to be used by the application, or a list of
+ * {@link net.sf.oereader.OEFolderInfo folderinfos} to be used by the application.
  *
  * @author Alex Franchuk
- * @version 1.0
+ * @version 1.1
  */
 public class OEReader {
 	/**
@@ -79,40 +81,43 @@ public class OEReader {
 		open = false;
 	}
 	
-	private OEMessageInfo[] concat(OEMessageInfo[] A, OEMessageInfo[] B) {
-		OEMessageInfo[] C= new OEMessageInfo[A.length+B.length];
-		System.arraycopy(A, 0, C, 0, A.length);
-		System.arraycopy(B, 0, C, A.length, B.length);
-		return C;
-	}
-
-	
-	private OEMessageInfo[] tree_Messages(byte[] data,OETree t) {
-		if (t == null) return new OEMessageInfo[0];
-		OEMessageInfo[] ret = new OEMessageInfo[t.bodyentries];
-		for (int i = 0; i < t.bodyentries; i++) {
-			ret[i] = new OEMessageInfo(data,t.value[i]);
-		}
-		concat(ret,tree_Messages(data,t.dChild));
-		for (int i = 0; i < t.bodyentries; i++) {
-			concat(ret,tree_Messages(data,t.bChildren[i]));
-		}
-		return ret;
-	}	
-	
 	/**
-	 * Gets an array of all {@link net.sf.oereader.OEMessageInfo OEMessageInfo} objects from the opened file.
+	 * Gets a list of all {@link net.sf.oereader.OEMessageInfo OEMessageInfo} objects from the opened file.
 	 *
-	 *@return an array of {@link net.sf.oereader.OEMessageInfo OEMessageInfo} objects
+	 *@return a list of {@link net.sf.oereader.OEMessageInfo OEMessageInfo} objects
 	 */
-	public OEMessageInfo[] getMessages() {
+	@SuppressWarnings("unchecked")
+	public List<OEMessageInfo> getMessages() throws Exception {
 		if (open == false) return null;
+
+		if (header.type != "MessageDB") {
+			throw new Exception("File type is not MessageDB, instead is: "+header.type);
+		}
 		
 		if (header.rootnodeEntries < 1) return null;
 		
-		OETree tree = new OETree(data,header.rootnode);
-		OEMessageInfo[] messages = tree_Messages(data,tree);
-		
-		return messages;
+		OETree tree = new OETree<OEMessageInfo>(data,header.rootnode, new OEMessageInfo());
+		if (tree == null) return new ArrayList<OEMessageInfo>(0);
+		else return tree.toList();
+	}
+
+	/**
+	 * Gets a list of all {@link net.sf.oereader.OEFolderInfo OEFolderInfo} objects from the opened file.
+	 *
+	 * @return a list of {@link net.sf.oereader.OEFolderInfo OEFolderInfo} objects
+	 */
+	@SuppressWarnings("unchecked")
+	public List<OEFolderInfo> getFolders() throws Exception {
+		if (open == false) return null;
+
+		if (header.type != "FolderDB") {
+			throw new Exception("File type is not FolderDB, instead is: "+header.type);
+		}
+
+		if (header.rootnodeEntries < 1) return null;
+
+		OETree tree = new OETree<OEFolderInfo>(data,header.rootnode, new OEFolderInfo());
+		if (tree == null) return new ArrayList<OEFolderInfo>(0);
+		else return tree.toList();
 	}
 }

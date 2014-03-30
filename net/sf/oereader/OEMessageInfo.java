@@ -11,11 +11,29 @@ package net.sf.oereader;
  */
 public class OEMessageInfo extends OEIndexedInfo {
 	/**
+	 * Static enum class of Flag bits
+	 */
+	public static class Flags {
+		public static int MESSAGE_BODY = 1 << 0;
+		public static int IN_WORK = 1 << 3;
+		public static int MARKED = 1 << 5;
+		public static int READ = 1 << 7;
+		public static int MARKED_FOR_DOWNLOAD = 1 << 8;
+		public static int NEWS_POSTING = 1 << 11;
+		public static int DIGITAL_SIGNED = 1 << 12;
+		public static int WITH_ATTACHMENT = 1 << 14;
+		public static int ANSWERED = 1 << 19;
+		public static int THREAD_WATCHED = 1 << 22;
+		public static int THREAD_IGNORED = 1 << 23;
+	}
+
+	/**
 	 * Index
 	 */
 	public int index;
 	/**
-	 * Flags, as described <a href="http://oedbx.aroh.de/doc/OE_Dbx_MessageInfo.html#flags">here</a>
+	 * Flags, as described <a href="http://oedbx.aroh.de/doc/OE_Dbx_MessageInfo.html#flags">here</a>,
+	 * and in the {@link net.sf.oereader.OEMessageInfo.Flags Flags} enum class
 	 */
 	public int flags;
 	/**
@@ -98,6 +116,13 @@ public class OEMessageInfo extends OEIndexedInfo {
 	 * Mail or newsgroup account name
 	 */
 	public String accountname;
+
+	/**
+	 * Constructor for MessageInfo factory object.
+	 */
+	public OEMessageInfo() {
+		super();
+	}
 	
 	/**
 	 * Constructor for the MessageInfo object.
@@ -180,5 +205,12 @@ public class OEMessageInfo extends OEIndexedInfo {
 			}
 		}
 		message = new OEMessage(data,messagep);
+	}
+
+	/**
+	 * Factory method to create a new OEMessageInfo object
+	 */
+	public OEMessageInfo create(byte[] data, int i) {
+		return new OEMessageInfo(data,i);
 	}
 }

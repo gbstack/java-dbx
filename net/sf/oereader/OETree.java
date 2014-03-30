@@ -1,12 +1,18 @@
 package net.sf.oereader;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Stores tree information from the .dbx file.
  *
  * @author Alex Franchuk
- * @version 1.0
+ * @version 1.1
  */
-public class OETree extends OEBase {
+public class OETree<T extends OEIndexedInfo> extends OEBase {
+	private byte[] data;
+	private OEIndexedInfo factory;
 	private int marker;
 	/**
 	 * Pointer to the child node
@@ -43,11 +49,11 @@ public class OETree extends OEBase {
 	/**
 	 * {@link net.sf.oereader.OETree OETree} of the child of this node
 	 */
-	public OETree dChild;
+	public OETree<T> dChild;
 	/**
 	 * {@link net.sf.oereader.OETree OETree}'s of the children of this node
 	 */
-	public OETree[] bChildren;
+	public OETree<T>[] bChildren;
 
 	/**
 	 * Reads a tree of data recursively from the root node of the file.
@@ -57,7 +63,10 @@ public class OETree extends OEBase {
 	 * @param data data to be read
 	 * @param i index to start from
 	 */
-	public OETree(byte[] data, int i) {
+	@SuppressWarnings("unchecked")
+	public OETree(byte[] data, int i, OEIndexedInfo factory) {
+		this.data = data;
+		this.factory = factory;
 		marker = toInt4(data,i);
 		child = toInt4(data,i+8);
 		parent = toInt4(data,i+12);
@@ -66,19 +75,39 @@ public class OETree extends OEBase {
 		childvalues = toInt4(data,i+20);
 		
 		if (child != 0) {
-			dChild = new OETree(data,child);
+			dChild = new OETree<T>(data,child,factory);
 		}
 		
 		value = new int[bodyentries];
 		childp = new int[bodyentries];
 		childvaluesp = new int[bodyentries];
-		bChildren = new OETree[bodyentries];
+		bChildren = (OETree<T>[]) new OETree[bodyentries];
 		
 		for (int k = 0; k < bodyentries; k++) {
 			value[k] = toInt4(data,24+12*k+i);
 			childp[k] = toInt4(data,28+12*k+i);
-			if (childp[k] != 0) bChildren[k] = new OETree(data,childp[k]);
+			if (childp[k] != 0) bChildren[k] = new OETree(data,childp[k],factory);
 			childvaluesp[k] = toInt4(data,32+12*k+i);
 		}
+	}
+
+	/**
+	 * Converts the OETree's contents to a list
+	 *
+	 * @return a list of the OETree's contained {@link net.sf.oereader.OEIndexedInfo OEIndexedInfo} objects
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> toList() {
+		ArrayList<T> ret = new ArrayList<T>(this.bodyentries);
+		for (int i = 0; i < this.bodyentries; i++) {
+			ret.add(i,(T)factory.create(data,this.value[i]));
+		}
+		if (this.dChild != null)
+			ret.addAll(this.dChild.toList());
+		for (int i = 0; i < this.bodyentries; i++) {
+			if (this.bChildren[i] != null)
+				ret.addAll(this.bChildren[i].toList());
+		}
+		return ret;
 	}
 }

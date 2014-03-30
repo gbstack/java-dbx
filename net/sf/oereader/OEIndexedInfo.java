@@ -9,7 +9,7 @@ package net.sf.oereader;
  * @author Alex Franchuk
  * @version 1.0
  */
-public class OEIndexedInfo extends OEBase {
+public abstract class OEIndexedInfo extends OEBase {
 	protected class IndexValue {
 		public int index;
 		public int value;
@@ -40,7 +40,13 @@ public class OEIndexedInfo extends OEBase {
 	public int changes;
 	protected int datapos;
 	protected IndexValue[] indices;
-	
+
+	/**
+	 * Constructor for Factory objects
+	 */
+	public OEIndexedInfo() {
+	}
+
 	/**
 	 * Constructor for an OEIndexedInfo object
 	 *
@@ -61,4 +67,6 @@ public class OEIndexedInfo extends OEBase {
 		}
 		datapos = i+12+entries*4;
 	}
+
+	public abstract OEIndexedInfo create(byte[] data, int i);
 }

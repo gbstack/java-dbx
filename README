@@ -1,5 +1,5 @@
 OEReader - Parses Outlook Express .dbx files
-    Copyright (C) 2012  Alex Franchuk
+    Copyright (C) 2013  Alex Franchuk
 
 ===== License =====
 OEReader is released under the GPL license, version 3:
@@ -19,39 +19,33 @@ OEReader is released under the GPL license, version 3:
 
 
 ===== Description =====
-The OEReader package is a set of structure-like classes that load data from an
-Outlook Express .dbx database file and can parse the data accordingly.
+The OEReader package is a set of structure-like classes that load data from
+an Outlook Express .dbx database file and can parse the data accordingly.
 
 The project is an implementation in Java of the .dbx file format that was
 found by the work of Arne Schloh: http://oedbx.aroh.de/
 
-The main class, OEReader, is used to load a file and read the messages from it,
-whereas the other classes are subclasses that are used either in parsing or in
-structuring the extracted data. Each class stores extracted data in a number of
-public variables which can be extracted by the user.
+The main class, OEReader, is used to load a file and read the messages from
+it, whereas the other classes are subclasses that are used either in
+parsing or in structuring the extracted data. Each class stores extracted
+data in a number of public variables which can be extracted by the user.
 
 NOTE: This parser is NOT complete. It is missing the implementation of the
-FolderInfo, Deleted, and Conditions objects, as well as parsing of the folder
-files fully. This was making the assumption that almost all people would only care
-about getting the messages out of the message file. If there is need for the
-full implementation of the library, email me (my email is below) and I will
-put the time in to finish the implementation. It doesn't exactly require much more
-time, but it is a bit laborious.
+Deleted and Conditions objects.
 
 
 ===== Libraries =====
-This package uses only Java standard libraries; no external libraries are needed
-on the classpath!
+This package uses only Java standard libraries; no external libraries are
+needed on the classpath!
 
 
 ===== Usage =====
-Download and open the javadoc folder in the master branch, or read the javadoc
-online at http://java-oe-reader.sourceforge.net
+Download and open the javadoc folder in the master branch, or read the
+javadoc online at http://java-oe-reader.sourceforge.net
 
-Generally, you want to create an OEReader object, load a file with the open(...)
-method, and then call getMessages() to retrieve an array of OEMessageInfo objects,
-containing all the information from all of the messages in the .dbx Outlook
-Express file.
+Generally, you want to create an OEReader object, load a file with the
+open(...) method, and then call getMessages()  or getFolders() to retrieve
+information from the .dbx Outlook Express file.
 
 
 ===== Contact =====
