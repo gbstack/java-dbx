@@ -86,12 +86,6 @@ public class OEBase {
 		for(i=0; i<result_bytes.size(); i++){
 			bytes[i] = result_bytes.get(i).byteValue();
 		}
-		try {
-			return new String(bytes, "GBK");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		}
+		return new String(bytes);
 	}
 }
