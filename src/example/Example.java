@@ -21,7 +21,7 @@ public class Example {
 			List<OEMessageInfo> msgs = null;
 			msgs = reader.getMessages();
 			for(OEMessageInfo msg:msgs){
-				System.out.println(msg.receiveraddr);
+				System.out.println(String.format("%s:%s\n%s\n\n\n", msg.subject, msg.receiveraddr, msg.message.text));
 			}
 		}
 		
