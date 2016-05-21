@@ -1,5 +1,8 @@
 package net.sf.oereader;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+
 /**
  * Base class which all other classes inherit; contains a number of functions
  * to parse data from binary.
@@ -74,10 +77,21 @@ public class OEBase {
 	 * @return {@link java.lang.String String} containing the read data string
 	 */
 	protected String toString(byte[] data, int i) {
-		String ret = "";
+		ArrayList<Byte> result_bytes = new ArrayList<Byte>();
 		for (int x = i; data[x] != 0; x++) {
-			ret += (char)data[x];
+			result_bytes.add(data[x]);
 		}
-		return ret;
+		// ArrayList.toArray will return Byte[] but not byte[]
+		byte[] bytes = new byte[result_bytes.size()];
+		for(i=0; i<result_bytes.size(); i++){
+			bytes[i] = result_bytes.get(i).byteValue();
+		}
+		try {
+			return new String(bytes, "GBK");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
 	}
 }
