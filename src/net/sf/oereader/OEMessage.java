@@ -41,9 +41,17 @@ public class OEMessage extends OEBase {
 		seglength = toInt4(data,i+8);
 		next = toInt4(data,i+12);
 		text = new String(data,i+16,seglength);
-		if (next != 0) {
-			OEMessage n = new OEMessage(data,next);
-			text += n.text;
+//		if (next != 0) {
+//			OEMessage n = new OEMessage(data,next);
+//			text += n.text;
+//		}
+		
+		while(next != 0){
+			seglength = toInt4(data, next+8);
+			text += new String(data, next+16, seglength);
+			
+			next = toInt4(data, next+12);
+			System.out.println(next);
 		}
 	}
 }
