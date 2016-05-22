@@ -2,9 +2,12 @@ package net.sf.oereader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
+import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
@@ -226,9 +229,27 @@ public class OEMessageInfo extends OEIndexedInfo {
 			}
 		}
 		message = new OEMessage(data,messagep);
+		
+		// parsing MimeMessage
 		ByteArrayInputStream stream = new ByteArrayInputStream(message.text.getBytes());
 		try {
 			MimeMessage mime_msg = new MimeMessage(session, stream);
+			String mime_subject = mime_msg.getSubject();
+			if(!mime_subject.isEmpty()){
+				subject = mime_subject;
+			}
+			InternetAddress sender_addr = (InternetAddress)mime_msg.getSender();
+			if(sender_addr != null && sender_addr.getPersonal() != null && !sender_addr.getPersonal().isEmpty()){
+				sendername = sender_addr.getPersonal();
+			}
+			
+			Address[] recipient_addrs = mime_msg.getRecipients(MimeMessage.RecipientType.TO);
+			if(recipient_addrs != null){
+				receivername = String.join(",", Arrays.stream(recipient_addrs)
+						.filter(addr->((InternetAddress)addr).getPersonal() != null)
+						.map(addr->((InternetAddress)addr).getPersonal()).toArray(String[]::new));
+			}
+			
 			try {
 				this.setBody(mime_msg.getContent().toString());
 			} catch (IOException e) {
