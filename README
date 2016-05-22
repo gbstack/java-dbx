@@ -12,12 +12,6 @@ data in a number of public variables which can be extracted by the user.
 NOTE: This parser is NOT complete. It is missing the implementation of the
 Deleted and Conditions objects.
 
-
-===== Libraries =====
-This package uses only Java standard libraries; no external libraries are
-needed on the classpath!
-
-
 ===== Usage =====
 Under Example folder you can find code to get how to use this library.
 
