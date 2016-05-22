@@ -1,5 +1,12 @@
 package net.sf.oereader;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+
 /**
  * Contains the information for a Message object.
  *
@@ -116,6 +123,17 @@ public class OEMessageInfo extends OEIndexedInfo {
 	 * Mail or newsgroup account name
 	 */
 	public String accountname;
+	
+	private String body;
+	
+
+	public String getBody() {
+		return body;
+	}
+
+	public void setBody(String body) {
+		this.body = body;
+	}
 
 	/**
 	 * Constructor for MessageInfo factory object.
@@ -134,6 +152,9 @@ public class OEMessageInfo extends OEIndexedInfo {
 	 */
 	public OEMessageInfo(byte[] data, int m) {
 		super(data,m);
+		
+		Session session = Session.getDefaultInstance(System.getProperties());
+		
 		for (int i = 0; i < indices.length; i++) {
 			IndexValue iv = indices[i];
 			switch(iv.index) {
@@ -205,6 +226,20 @@ public class OEMessageInfo extends OEIndexedInfo {
 			}
 		}
 		message = new OEMessage(data,messagep);
+		ByteArrayInputStream stream = new ByteArrayInputStream(message.text.getBytes());
+		try {
+			MimeMessage mime_msg = new MimeMessage(session, stream);
+			try {
+				this.setBody(mime_msg.getContent().toString());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
