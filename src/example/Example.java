@@ -2,6 +2,8 @@ package example;
 
 import java.util.List;
 
+import javax.mail.Part;
+
 import net.sf.oereader.OEFolderInfo;
 import net.sf.oereader.OEMessageInfo;
 import net.sf.oereader.OEReader;
@@ -21,7 +23,11 @@ public class Example {
 			List<OEMessageInfo> msgs = null;
 			msgs = reader.getMessages();
 			for(OEMessageInfo msg:msgs){
-				System.out.println(String.format("%s:%s\n%s\n\n\n", msg.subject, msg.receiveraddr, msg.message.text));
+				System.out.println(String.format("%s:%s\n%s\n\n\n", msg.subject, msg.sendername, msg.receivername));
+				List<Part> attachments = msg.getAttachments();
+				for(Part attch:attachments){
+					msg.saveAttachment(attch, "E:\\");
+				}
 			}
 		}
 		

@@ -1,16 +1,25 @@
 package net.sf.oereader;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 /**
  * Contains the information for a Message object.
@@ -131,6 +140,11 @@ public class OEMessageInfo extends OEIndexedInfo {
 	
 	private String body;
 	
+	private List<Part> attachments = new ArrayList<Part>();
+	
+	public List<Part> getAttachments(){
+		return attachments;
+	}
 
 	public String getBody() {
 		return body;
@@ -266,6 +280,7 @@ public class OEMessageInfo extends OEIndexedInfo {
 		}
 	}
 	
+	// extract body text and attachments
 	private void extractPart(Part part) throws IOException, MessagingException{
 		Object content = part.getContent();
 		if(content instanceof MimeMultipart){
@@ -273,9 +288,37 @@ public class OEMessageInfo extends OEIndexedInfo {
 			for(int i=0; i<multipart.getCount(); i++){
 				this.extractPart(multipart.getBodyPart(i));
 			}
-		}else{
+		}
+		else if(content instanceof InputStream){
+			attachments.add(part);
+		}
+		else{
 			this.setBody(this.getBody()+content.toString());
 		}
+	}
+
+	public void saveAttachment(Part part, String dest_dir)
+			throws UnsupportedEncodingException, MessagingException, FileNotFoundException, IOException {
+		int offset = 0;
+		byte[] bytes = new byte[100];
+		InputStream stream = (InputStream)part.getContent();
+		
+		String filename = dest_dir+"attachment-%s";
+		if(part instanceof BodyPart){
+			String bodypart_filename = MimeUtility.decodeText(((BodyPart)part).getFileName());
+			if(bodypart_filename != null || !bodypart_filename.isEmpty()){
+				filename = String.format(filename, bodypart_filename);
+			}else{
+				filename = String.format(filename, this.subject);
+			}
+		}else{
+			filename = String.format(filename, this.subject);
+		}
+		FileOutputStream output_stream = new FileOutputStream(new File(filename));
+		while(stream.read(bytes, offset, 100) != -1){
+			output_stream.write(bytes);
+		}
+		output_stream.close();
 	}
 
 	/**
