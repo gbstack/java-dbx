@@ -6,9 +6,11 @@ import java.util.Arrays;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 /**
  * Contains the information for a Message object.
@@ -251,7 +253,8 @@ public class OEMessageInfo extends OEIndexedInfo {
 			}
 			
 			try {
-				this.setBody(mime_msg.getContent().toString());
+//				this.setBody(mime_msg.getContent().toString());
+				this.extractPart(mime_msg);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -260,6 +263,18 @@ public class OEMessageInfo extends OEIndexedInfo {
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	private void extractPart(Part part) throws IOException, MessagingException{
+		Object content = part.getContent();
+		if(content instanceof MimeMultipart){
+			MimeMultipart multipart = (MimeMultipart)content;
+			for(int i=0; i<multipart.getCount(); i++){
+				this.extractPart(multipart.getBodyPart(i));
+			}
+		}else{
+			this.setBody(this.getBody()+content.toString());
 		}
 	}
 
